@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "frostbear",
+	"version": "${version}",
+	"name": "FrostBear",
+	"description": "Adds the FrostBear — a mighty polar bear boss that stalks the frozen north. Fight it, survive its icy charge, and claim its frozen heart.",
+	"authors": [
+		"Fatin Ishraq"
+	],
+	"contact": {
+		"homepage": "https://github.com/Fatin-Ishraq/FrostBear",
+		"sources": "https://github.com/Fatin-Ishraq/FrostBear",
+		"issues": "https://github.com/Fatin-Ishraq/FrostBear/issues"
+	},
+	"license": "MIT",
+	"icon": "assets/frostbear/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.frostbear.FrostBear"
+		],
+		"client": [
+			"com.example.frostbear.client.FrostBearClient"
+		]
+	},
+	"mixins": [
+		"frostbear.mixins.json",
+		{
+			"config": "frostbear.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"suggests": {}
+}

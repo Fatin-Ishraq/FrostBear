@@ -1,0 +1,28 @@
+{
+	"entity.frostbear.frost_bear": "FrostBear",
+	"entity.frostbear.ice_spike": "Ice Spike",
+	"item.frostbear.frost_heart": "Frozen Heart",
+	"item.frostbear.glacial_core": "Glacial Core",
+	"item.frostbear.frostfang": "Frostfang",
+	"item.frostbear.frost_bear_spawn_egg": "FrostBear Spawn Egg",
+
+	"effect.frostbear.winters_heart": "Heart of Winter",
+	"message.frostbear.frozen_heart_awakened": "HEART OF WINTER AWAKENED",
+	"tooltip.frostbear.frostfang.hit": "Chills and freezes struck enemies",
+	"tooltip.frostbear.frostfang.ability": "Right-click: Erupt a wave of ice spikes",
+	"tooltip.frostbear.frostfang.cooldown": "Cooldown: 6 seconds",
+	"tooltip.frostbear.frost_heart.duration": "Consume to gain Heart of Winter for 2 minutes",
+	"tooltip.frostbear.frost_heart.aura": "Nearby hostile mobs are slowed and frozen",
+	"tooltip.frostbear.frost_heart.regeneration": "Also grants Regeneration II for 10 seconds",
+	"tooltip.frostbear.glacial_core.lore": "A frozen remnant of the FrostBear",
+	"tooltip.frostbear.glacial_core.use": "Used to craft and repair Frostfang",
+	"tag.item.frostbear.repairs_frostfang": "Repairs Frostfang",
+
+	"subtitles.frostbear.frost_bear.roar": "FrostBear roars",
+	"subtitles.frostbear.frost_bear.growl": "FrostBear growls",
+	"subtitles.frostbear.frost_bear.hurt": "FrostBear hurts",
+	"subtitles.frostbear.frost_bear.death": "FrostBear dies",
+	"subtitles.frostbear.frost_bear.breath": "FrostBear exhales frost",
+	"subtitles.frostbear.frost_bear.charge": "FrostBear charges",
+	"subtitles.frostbear.frost_bear.step": "FrostBear stomps"
+}

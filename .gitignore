@@ -1,0 +1,35 @@
+# Gradle
+.gradle/
+build/
+out/
+classes/
+
+# Loom / Fabric development runs and migration output
+run/
+run-26.2/
+remappedSrc/
+
+# Locally maintained development tools and source assets
+model-portal/
+art/
+preview/
+sounds/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+
+# Logs and crash output
+*.log
+crash-reports/
+
+# OS
+.DS_Store
+Thumbs.db

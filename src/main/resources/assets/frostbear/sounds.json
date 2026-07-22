@@ -1,0 +1,9 @@
+{
+	"frost_bear_roar":   { "category": "hostile", "subtitle": "subtitles.frostbear.frost_bear.roar",   "sounds": [ { "name": "frostbear:frost_bear_roar", "stream": false } ] },
+	"frost_bear_growl":  { "category": "hostile", "subtitle": "subtitles.frostbear.frost_bear.growl",  "sounds": [ "frostbear:frost_bear_growl" ] },
+	"frost_bear_hurt":   { "category": "hostile", "subtitle": "subtitles.frostbear.frost_bear.hurt",   "sounds": [ "frostbear:frost_bear_hurt" ] },
+	"frost_bear_death":  { "category": "hostile", "subtitle": "subtitles.frostbear.frost_bear.death",  "sounds": [ "frostbear:frost_bear_death" ] },
+	"frost_bear_step":   { "category": "hostile", "subtitle": "subtitles.frostbear.frost_bear.step", "sounds": [ "frostbear:frost_bear_step" ] },
+	"frost_bear_breath": { "category": "hostile", "subtitle": "subtitles.frostbear.frost_bear.breath", "sounds": [ "frostbear:frost_bear_breath" ] },
+	"frost_bear_charge": { "category": "hostile", "subtitle": "subtitles.frostbear.frost_bear.charge", "sounds": [ "frostbear:frost_bear_charge" ] }
+}
