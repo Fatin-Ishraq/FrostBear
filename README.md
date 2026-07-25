@@ -1,5 +1,7 @@
 # FrostBear
 
+![FrostBear banner](screenshots/frostbear-banner.png)
+
 FrostBear is a Fabric mod for Minecraft Java Edition 26.2 that adds a powerful frozen polar-bear boss, new combat encounters, custom loot, and an ice-spike weapon.
 
 ## Highlights
