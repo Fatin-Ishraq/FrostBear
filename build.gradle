@@ -1,65 +1,66 @@
 plugins {
-	id 'net.fabricmc.fabric-loom' version "${loom_version}"
-	id 'maven-publish'
+	id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
+	id 'net.neoforged.moddev' version "${moddev_version}" apply false
 }
 
-version = project.mod_version
-group = project.maven_group
+subprojects {
+	apply plugin: 'java-library'
 
-base {
-	archivesName = project.archives_base_name
-}
+	version = mod_version
+	group = maven_group
 
-repositories {
-	// Loom supplies the Minecraft and Fabric repositories.
-}
+	base {
+		// frostbear-fabric-26.2-<version>.jar, frostbear-neoforge-26.2-<version>.jar
+		archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+	}
 
-loom {
-	runs {
-		client {
-			runDir 'run-26.2/client'
+	repositories {
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
 		}
-		server {
-			runDir 'run-26.2/server'
+		mavenCentral()
+	}
+
+	java {
+		toolchain.languageVersion = JavaLanguageVersion.of(25)
+		withSourcesJar()
+	}
+
+	tasks.withType(JavaCompile).configureEach {
+		options.encoding = 'UTF-8'
+		options.release = 25
+	}
+
+	tasks.named('jar', Jar) {
+		from(rootProject.file('LICENSE')) {
+			rename { "${it}_${mod_id}" }
 		}
 	}
 }
 
-dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-}
+// Shared by the fabric and neoforge builds: compile and package the common
+// module's sources and resources into each loader jar.
+configure([project(':fabric'), project(':neoforge')]) {
+	evaluationDependsOn(':common')
+	def common = project(':common')
 
-processResources {
-	inputs.property "version", project.version
-
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	it.options.release = 25
-}
-
-java {
-	withSourcesJar()
-	sourceCompatibility = JavaVersion.VERSION_25
-	targetCompatibility = JavaVersion.VERSION_25
-}
-
-jar {
-	from("LICENSE") {
-		rename { "${it}_${project.base.archivesName.get()}" }
-	}
-}
-
-publishing {
-	publications {
-		create("mavenJava", MavenPublication) {
-			artifactId = project.archives_base_name
-			from components.java
+	dependencies {
+		// Lets IDEs resolve common classes; the classes themselves are compiled below.
+		compileOnly(common) {
+			transitive = false
 		}
+	}
+
+	tasks.named('compileJava', JavaCompile) {
+		source(common.sourceSets.main.java)
+	}
+
+	tasks.named('processResources', ProcessResources) {
+		from(common.sourceSets.main.resources)
+	}
+
+	tasks.named('sourcesJar', Jar) {
+		from(common.sourceSets.main.allSource)
 	}
 }

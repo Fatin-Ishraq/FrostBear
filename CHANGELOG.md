@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — Fabric and NeoForge 26.2
+
+- One build now produces both the Fabric and NeoForge JARs from a shared `common` module.
+- Release JARs are named `frostbear-fabric-26.2-<version>.jar` and `frostbear-neoforge-26.2-<version>.jar`.
+- NeoForge natural spawns now cover icy biomes (`#c:is_icy`) as well as snowy ones, matching Fabric.
+- The FrostBear boss bar now shows the bear's custom name after it is name-tagged or reloaded from a save.
+- Built against Fabric Loader 0.19.5, Fabric API 0.161.0+26.2, and NeoForge 26.2.0.90.
+
 ## 1.1.0 — Minecraft 26.2
 
 - Ported FrostBear to Minecraft Java Edition 26.2 and Java 25.

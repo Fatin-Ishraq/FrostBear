@@ -1,0 +1,13 @@
+plugins {
+	id 'net.neoforged.moddev'
+}
+
+// Compile against plain vanilla Minecraft (no loader), so loader-specific
+// classes cannot leak into shared code.
+neoForge {
+	neoFormVersion = neoform_version
+}
+
+dependencies {
+	compileOnly "net.fabricmc:sponge-mixin:${mixin_version}"
+}

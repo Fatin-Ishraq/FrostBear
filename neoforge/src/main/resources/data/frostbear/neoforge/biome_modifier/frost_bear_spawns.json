@@ -1,0 +1,18 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": {
+    "type": "neoforge:or",
+    "values": [
+      "#c:is_snowy",
+      "#c:is_icy"
+    ]
+  },
+  "spawners": [
+    {
+      "type": "frostbear:frost_bear",
+      "weight": 3,
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ]
+}

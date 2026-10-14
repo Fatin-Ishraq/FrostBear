@@ -1,0 +1,33 @@
+license="${mod_license}"
+issueTrackerURL="https://github.com/Fatin-Ishraq/FrostBear/issues"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+displayURL="https://github.com/Fatin-Ishraq/FrostBear"
+iconFile="frostbear-icon.png"
+authors="Fatin Ishraq"
+description='''
+Adds the FrostBear — a mighty polar bear boss that stalks the frozen north. Fight it, survive its icy charge, and claim its frozen heart.
+'''
+
+[[mixins]]
+config="frostbear.mixins.json"
+
+[[mixins]]
+config="frostbear.client.mixins.json"
+
+[[dependencies.${mod_id}]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"

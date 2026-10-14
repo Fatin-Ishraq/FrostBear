@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'multiloader/**']
   pull_request:
-    branches: [main]
+    branches: [main, 'multiloader/**']
 
 permissions:
   contents: read
@@ -30,9 +30,16 @@ jobs:
       - name: Build FrostBear
         run: ./gradlew build --no-daemon
 
-      - name: Upload build artifacts
+      - name: Upload Fabric JAR
         uses: actions/upload-artifact@v4
         with:
-          name: frostbear-26.2
-          path: build/libs/*.jar
+          name: frostbear-fabric-26.2
+          path: fabric/build/libs/*.jar
+          if-no-files-found: error
+
+      - name: Upload NeoForge JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: frostbear-neoforge-26.2
+          path: neoforge/build/libs/*.jar
           if-no-files-found: error
