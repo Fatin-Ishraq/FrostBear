@@ -2,6 +2,7 @@ package com.example.frostbear.client;
 
 import com.example.frostbear.FrostBear;
 import com.example.frostbear.entity.FrostBearEntity;
+import com.example.frostbear.entity.FrostBearMove;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
@@ -13,7 +14,8 @@ public class FrostBearEntityRenderer
 			Identifier.fromNamespaceAndPath(FrostBear.MOD_ID, "textures/entity/frost_bear.png");
 
 	public FrostBearEntityRenderer(EntityRendererProvider.Context context) {
-		super(context, new FrostBearEntityModel(context.bakeLayer(ModModelLayers.FROST_BEAR)), 1.55F);
+		super(context, new FrostBearEntityModel(context.bakeLayer(ModModelLayers.FROST_BEAR)), 1.75F);
+		this.addLayer(new FrostBearCracksLayer(this));
 		this.addLayer(new FrostBearEyesFeatureRenderer(this));
 	}
 
@@ -32,9 +34,12 @@ public class FrostBearEntityRenderer
 		super.extractRenderState(entity, state, partialTick);
 		state.attackTime = entity.getAttackAnim(partialTick);
 		state.hurtTime = Math.max(0.0F, entity.hurtTime - partialTick);
-		state.roarTicks = Math.max(0.0F, entity.getRoarTicks() - partialTick);
-		state.breathTicks = Math.max(0.0F, entity.getBreathTicks() - partialTick);
-		state.slamTicks = Math.max(0.0F, entity.getSlamTicks() - partialTick);
-		state.chargeTicks = Math.max(0.0F, entity.getChargeTicks() - partialTick);
+		state.move = entity.getMove();
+		state.moveTick = state.move == FrostBearMove.NONE ? 0.0F : entity.getMoveTick() + partialTick;
+		state.moveLength = entity.getMoveLength();
+		state.enraged = entity.isEnraged();
+		state.guardThawed = entity.isGuardThawed();
+		state.aggressive = entity.isAggressive();
+		state.animationOffset = (entity.getId() * 0.61803398F % 1.0F) * 1000.0F;
 	}
 }

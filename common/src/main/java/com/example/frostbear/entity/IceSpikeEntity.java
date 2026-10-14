@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import com.example.frostbear.effect.Frostbite;
 import com.example.frostbear.registry.ModEntities;
 
 /**
@@ -70,6 +71,27 @@ public class IceSpikeEntity extends Entity {
 		this.stagger = stagger;
 	}
 
+	/** One spike at an exact spot; {@code stagger} ticks of frost warning come first. */
+	public static void spawnSpike(Level world, double x, double y, double z, int height, int stagger, LivingEntity owner) {
+		IceSpikeEntity spike = new IceSpikeEntity(ModEntities.ICE_SPIKE.get(), world);
+		spike.snapTo(x, y, z, 0.0F, 0.0F);
+		spike.setOwner(owner);
+		spike.setMaxHeight(height);
+		spike.setStagger(stagger);
+		world.addFreshEntity(spike);
+	}
+
+	/** A ring of spikes on the ground around a centre. */
+	public static void spawnRing(Level world, Vec3 center, double radius, int count, int stagger, LivingEntity owner) {
+		double offset = world.getRandom().nextDouble() * Math.PI * 2.0;
+		for (int i = 0; i < count; i++) {
+			double angle = offset + Math.PI * 2.0 * i / count;
+			double x = center.x + Math.cos(angle) * radius;
+			double z = center.z + Math.sin(angle) * radius;
+			spawnSpike(world, x, findGround(world, x, center.y, z), z, 2, stagger, owner);
+		}
+	}
+
 	/** Spawn a ripple wave of spikes stepping outward from an origin toward a direction. */
 	public static void spawnWave(Level world, double ox, double oy, double oz, Vec3 dir, int count, LivingEntity owner) {
 		Vec3 horiz = new Vec3(dir.x, 0.0, dir.z);
@@ -82,16 +104,11 @@ public class IceSpikeEntity extends Entity {
 			double x = ox + horiz.x * dist;
 			double z = oz + horiz.z * dist;
 			double y = findGround(world, x, oy, z);
-			IceSpikeEntity spike = new IceSpikeEntity(ModEntities.ICE_SPIKE.get(), world);
-			spike.snapTo(x, y, z, 0.0F, 0.0F);
-			spike.setOwner(owner);
-			spike.setMaxHeight(2 + world.getRandom().nextInt(2));
-			spike.setStagger((i - 1) * 2);
-			world.addFreshEntity(spike);
+			spawnSpike(world, x, y, z, 2 + world.getRandom().nextInt(2), 6 + (i - 1) * 2, owner);
 		}
 	}
 
-	private static double findGround(Level world, double x, double y, double z) {
+	public static double findGround(Level world, double x, double y, double z) {
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(net.minecraft.util.Mth.floor(x),
 				net.minecraft.util.Mth.floor(y) + 2, net.minecraft.util.Mth.floor(z));
 		for (int i = 0; i < 6; i++) {
@@ -107,6 +124,14 @@ public class IceSpikeEntity extends Entity {
 	public void tick() {
 		if (this.stagger > 0) {
 			this.stagger--;
+			// a frost ring on the ground marks where the spike will erupt
+			if (this.level() instanceof ServerLevel sw && this.stagger % 3 == 0) {
+				for (int i = 0; i < 6; i++) {
+					double angle = Math.PI * 2.0 * i / 6.0 + this.stagger * 0.4;
+					sw.sendParticles(ParticleTypes.SNOWFLAKE, this.getX() + Math.cos(angle) * 0.6, this.getY() + 0.1,
+							this.getZ() + Math.sin(angle) * 0.6, 1, 0.0, 0.0, 0.0, 0.0);
+				}
+			}
 			return;
 		}
 		if (this.level().isClientSide()) {
@@ -135,7 +160,9 @@ public class IceSpikeEntity extends Entity {
 	private void placeLevel(int level) {
 		BlockPos pos = this.blockPosition().above(level);
 		BlockState state = this.level().getBlockState(pos);
-		if (state.isAir() || state.canBeReplaced()) {
+		// never seal a living thing inside the ice: the strike has already launched it
+		boolean occupied = !this.level().getEntitiesOfClass(LivingEntity.class, new AABB(pos), Entity::isAlive).isEmpty();
+		if ((state.isAir() || state.canBeReplaced()) && !occupied) {
 			BlockState ice = level >= this.maxHeight - 1 ? Blocks.ICE.defaultBlockState() : Blocks.PACKED_ICE.defaultBlockState();
 			this.level().setBlock(pos, ice, FLAGS);
 			this.placed.add(pos.immutable());
@@ -154,8 +181,7 @@ public class IceSpikeEntity extends Entity {
 			target.hurt(this.damageSources().freeze(), 6.0f);
 			target.push(0.0, 0.55, 0.0);
 			target.hurtMarked = true;
-			target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 80, 1));
-			target.setTicksFrozen(target.getTicksFrozen() + 120);
+			Frostbite.apply(target, 1, owner);
 		}
 		if (this.level() instanceof ServerLevel sw) {
 			sw.sendParticles(ParticleTypes.SNOWFLAKE, this.getX(), this.getY() + 0.6, this.getZ(),

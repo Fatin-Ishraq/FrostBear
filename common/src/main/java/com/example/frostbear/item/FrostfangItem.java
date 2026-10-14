@@ -1,6 +1,7 @@
 package com.example.frostbear.item;
 
 import java.util.function.Consumer;
+import com.example.frostbear.effect.Frostbite;
 import com.example.frostbear.entity.IceSpikeEntity;
 import com.example.frostbear.registry.ModSounds;
 import net.minecraft.ChatFormatting;
@@ -11,8 +12,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -21,19 +22,31 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
-/** Frost-forged blade with a freezing hit and an ice-spike wave ability. */
+/**
+ * Frost-forged blade: every hit adds Frostbite, hits on already-Frostbitten
+ * targets deal +20% damage, and right-click erupts an ice-spike wave.
+ */
 public class FrostfangItem extends Item {
 	private static final int COOLDOWN = 120;
 	private static final int SPIKES = 6;
+	private static final float FROSTBITTEN_BONUS = 0.2F;
 
 	public FrostfangItem(Properties properties) {
 		super(properties);
 	}
 
+	/** Bonus damage against targets that already have Frostbite (checked before this hit adds a stack). */
+	@Override
+	public float getAttackDamageBonus(Entity victim, float damage, DamageSource damageSource) {
+		if (victim instanceof LivingEntity living && Frostbite.stacks(living) > 0) {
+			return damage * FROSTBITTEN_BONUS;
+		}
+		return 0.0F;
+	}
+
 	@Override
 	public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 80, 1));
-		target.setTicksFrozen(target.getTicksFrozen() + 120);
+		Frostbite.apply(target, 1, attacker);
 		super.hurtEnemy(stack, target, attacker);
 	}
 

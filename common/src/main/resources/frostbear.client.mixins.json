@@ -4,7 +4,8 @@
   "package": "com.example.frostbear.mixin.client",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "ClientPlayNetworkHandlerMixin"
+    "ClientPlayNetworkHandlerMixin",
+    "LocalPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

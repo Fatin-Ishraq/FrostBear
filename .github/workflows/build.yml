@@ -30,6 +30,9 @@ jobs:
       - name: Build FrostBear
         run: ./gradlew build --no-daemon
 
+      - name: Run game tests
+        run: ./gradlew :fabric:runGametest :neoforge:runGameTestServer --no-daemon
+
       - name: Upload Fabric JAR
         uses: actions/upload-artifact@v4
         with:

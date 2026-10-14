@@ -16,6 +16,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.gametest.GameTestHooks;
 
 /**
  * NeoForge entrypoint: registers everything through common code, then hooks
@@ -28,6 +29,9 @@ public class FrostBearNeoForge {
 		NeoForgePlatform platform = new NeoForgePlatform();
 		FrostBear.init(platform);
 		platform.registerAll(modBus);
+		if (GameTestHooks.isGametestEnabled()) {
+			FrostBearNeoForgeGameTests.register(modBus);
+		}
 
 		modBus.addListener(EntityAttributeCreationEvent.class, event ->
 				event.put(ModEntities.FROST_BEAR.get(), FrostBearEntity.createFrostBearAttributes().build()));

@@ -21,6 +21,9 @@
 		],
 		"client": [
 			"com.example.frostbear.fabric.FrostBearFabricClient"
+		],
+		"fabric-gametest": [
+			"com.example.frostbear.fabric.FrostBearFabricGameTests"
 		]
 	},
 	"mixins": [

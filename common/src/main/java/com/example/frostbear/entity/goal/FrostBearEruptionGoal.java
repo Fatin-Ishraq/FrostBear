@@ -1,82 +1,53 @@
 package com.example.frostbear.entity.goal;
 
-import java.util.EnumSet;
+import com.example.frostbear.entity.FrostBearEntity;
+import com.example.frostbear.entity.FrostBearMove;
+import com.example.frostbear.entity.IceSpikeEntity;
+import com.example.frostbear.registry.ModSounds;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
-import com.example.frostbear.entity.FrostBearEntity;
-import com.example.frostbear.entity.IceSpikeEntity;
-import com.example.frostbear.registry.ModSounds;
 
 /**
- * The FrostBear rears up and slams the ground, erupting a wave of ice spikes
- * toward its target — the same move the Frostfang wields.
+ * Ground slam: the bear rears up (the tell), slams down, and a line of ice spikes ripples
+ * toward the target. Each spike marks its spot with frost before it erupts, so stepping
+ * off the line dodges it. With mob griefing on, the impact shatters soft blocks around
+ * the bear, so walls and pits do not hold it.
  */
-public class FrostBearEruptionGoal extends Goal {
-	private final FrostBearEntity bear;
-	private int cooldown = 120;
-	private LivingEntity target;
-	private boolean fired;
-
+public class FrostBearEruptionGoal extends FrostBearAttackGoal {
 	public FrostBearEruptionGoal(FrostBearEntity bear) {
-		this.bear = bear;
-		this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+		super(bear, FrostBearMove.SLAM, 120, 220, 160);
 	}
 
 	@Override
-	public boolean canUse() {
-		if (this.cooldown > 0) {
-			this.cooldown--;
-			return false;
+	protected boolean canStart(LivingEntity target) {
+		double d = this.distanceTo(target);
+		return this.bear.onGround() && d > 3.0 && d < 18.0;
+	}
+
+	@Override
+	protected void onStart(ServerLevel level) {
+		this.bear.playSound(ModSounds.FROST_BEAR_ROAR.get(), 2.2F, 0.7F);
+	}
+
+	@Override
+	protected boolean lookAtTarget(FrostBearMove move, int tick) {
+		return tick < FrostBearMove.SLAM_IMPACT;
+	}
+
+	@Override
+	protected void onTick(ServerLevel level, FrostBearMove move, int tick) {
+		if (tick != FrostBearMove.SLAM_IMPACT || this.target == null) {
+			return;
 		}
-		LivingEntity t = this.bear.getTarget();
-		if (t == null || !t.isAlive() || this.bear.isBusy() || !this.bear.onGround()) {
-			return false;
-		}
-		double d2 = this.bear.distanceToSqr(t);
-		return d2 > 4.0 && d2 < 324.0; // roughly 2–18 blocks
-	}
-
-	@Override
-	public void start() {
-		this.target = this.bear.getTarget();
-		this.fired = false;
-		this.bear.triggerSlam();
-	}
-
-	@Override
-	public boolean canContinueToUse() {
-		return this.bear.getSlamTicks() > 0;
-	}
-
-	@Override
-	public void tick() {
-		if (this.target != null) {
-			this.bear.getLookControl().setLookAt(this.target, 30.0f, 30.0f);
-		}
-		int elapsed = FrostBearEntity.SLAM_DURATION - this.bear.getSlamTicks();
-		if (!this.fired && elapsed >= 13 && this.target != null) {
-			this.fired = true;
-			Vec3 dir = this.target.position().subtract(this.bear.position());
-			IceSpikeEntity.spawnWave(this.bear.level(),
-					this.bear.getX(), this.bear.getY(), this.bear.getZ(), dir, 6, this.bear);
-			if (this.bear.level() instanceof ServerLevel world) {
-				world.sendParticles(ParticleTypes.SNOWFLAKE,
-						this.bear.getX(), this.bear.getY() + 0.35, this.bear.getZ(),
-						42, 1.5, 0.25, 1.5, 0.12);
-				world.sendParticles(ParticleTypes.POOF,
-						this.bear.getX(), this.bear.getY() + 0.2, this.bear.getZ(),
-						18, 1.1, 0.12, 1.1, 0.04);
-			}
-			this.bear.playSound(ModSounds.FROST_BEAR_STEP.get(), 2.0f, 0.7f);
-		}
-	}
-
-	@Override
-	public void stop() {
-		this.cooldown = 220 + this.bear.getRandom().nextInt(160);
-		this.target = null;
+		Vec3 dir = this.target.position().subtract(this.bear.position());
+		IceSpikeEntity.spawnWave(level, this.bear.getX(), this.bear.getY(), this.bear.getZ(), dir, 6, this.bear);
+		this.bear.smashAround(level, 2);
+		level.sendParticles(ParticleTypes.SNOWFLAKE, this.bear.getX(), this.bear.getY() + 0.35, this.bear.getZ(),
+				42, 1.5, 0.25, 1.5, 0.12);
+		level.sendParticles(ParticleTypes.POOF, this.bear.getX(), this.bear.getY() + 0.2, this.bear.getZ(),
+				18, 1.1, 0.12, 1.1, 0.04);
+		this.bear.playSound(ModSounds.FROST_BEAR_STEP.get(), 2.0F, 0.7F);
 	}
 }
